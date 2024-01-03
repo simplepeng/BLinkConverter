@@ -8,4 +8,8 @@ import androidx.lifecycle.ViewModel
 class MainViewModel : ViewModel() {
 
     var btvUrl by mutableStateOf("")
+
+    var outTitle by mutableStateOf("")
+
+    var outUrl by mutableStateOf("")
 }

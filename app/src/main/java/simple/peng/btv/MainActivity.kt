@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.os.postDelayed
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -152,21 +153,9 @@ fun MainPage(
                 }
 
                 Button(onClick = {
-                    if (viewModel.btvUrl.isEmpty()) return@Button
-
-                    val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-                        throwable.printStackTrace()
-                        isLoading = false
-                    }
-                    isLoading = true
-                    scope.launch(exceptionHandler) {
-                        withContext(Dispatchers.IO) {
-                            val (title, url) = ParseUtils.decode(viewModel.btvUrl)
-                            isLoading = false
-                            outTitle = title
-                            outputUrl = url
-                        }
-                    }
+                    decodeUrl(viewModel, scope, onDecoding = {
+                        isLoading = it
+                    })
                 }) {
                     Text(text = "转换")
                 }
@@ -208,6 +197,25 @@ fun MainPage(
                 Text(text = "复制")
             }
 
+        }
+    }
+}
+
+private fun decodeUrl(
+    viewModel: MainViewModel,
+    scope: CoroutineScope,
+    onDecoding: ((Boolean) -> Unit)? = null,
+) {
+    onDecoding?.invoke(true)
+    val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        throwable.printStackTrace()
+    }
+    scope.launch(exceptionHandler) {
+        withContext(Dispatchers.IO) {
+            val (title, url) = ParseUtils.decode(viewModel.btvUrl)
+            viewModel.outTitle = title
+            viewModel.outUrl = url
+            onDecoding?.invoke(false)
         }
     }
 }
