@@ -12,4 +12,6 @@ class MainViewModel : ViewModel() {
     var outTitle by mutableStateOf("")
 
     var outUrl by mutableStateOf("")
+
+    var canDecode by mutableStateOf(false)
 }

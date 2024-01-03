@@ -47,8 +47,6 @@ class MainActivity : ComponentActivity() {
         applicationContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     }
 
-//    private var btvUrl by mutableStateOf("")
-
     private val mainViewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,18 +72,15 @@ class MainActivity : ComponentActivity() {
             val text = primaryClip.getItemAt(0)?.text
             if (text.isNullOrEmpty()) return
 
-            if (text.startsWith("http")) {
-                mainViewModel.btvUrl = text.toString()
-            } else {
-//                mainViewModel.btvUrl.substringAfterLast("https").let {
-//                    mainViewModel.btvUrl = "https$it"
-//                    Log.d("MainActivity", "btvUrl: ${mainViewModel.btvUrl}")
-//                }
-                //用正则把mainViewModel.btvUrl里面的url取出来
-                val pattern = "https://\\S+".toRegex()
-                val matches = pattern.findAll(text)
-                val url = matches.toList().firstOrNull()?.value.orEmpty()
-                mainViewModel.btvUrl = url
+            //用正则把mainViewModel.btvUrl里面的url取出来
+            val pattern = "https://\\S+".toRegex()
+            val matches = pattern.findAll(text)
+            val url = matches.toList().firstOrNull()?.value.orEmpty()
+            mainViewModel.btvUrl = url
+            Log.d("MainActivity", "btvUrl -- $url")
+
+            if (mainViewModel.btvUrl.isNotEmpty()) {
+                mainViewModel.canDecode = true
             }
         }
     }
@@ -106,11 +101,6 @@ fun MainPage(
     viewModel: MainViewModel
 ) {
     val scope = rememberCoroutineScope()
-
-//    var inputUrl by remember { mutableStateOf(btvUrl) }
-
-    var outputUrl by remember { mutableStateOf("") }
-    var outTitle by remember { mutableStateOf("") }
 
     var isLoading by remember { mutableStateOf(false) }
 
@@ -152,19 +142,24 @@ fun MainPage(
                     Text(text = "粘贴")
                 }
 
-                Button(onClick = {
+                if (viewModel.canDecode) {
                     decodeUrl(viewModel, scope, onDecoding = {
                         isLoading = it
                     })
+                    viewModel.canDecode = false
+                }
+
+                Button(onClick = {
+                    viewModel.canDecode = true
                 }) {
                     Text(text = "转换")
                 }
             }
 
             OutlinedTextField(
-                value = outTitle,
+                value = viewModel.outTitle,
                 onValueChange = {
-                    outTitle = it
+                    viewModel.outTitle = it
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -174,15 +169,15 @@ fun MainPage(
                 }
             )
             Button(onClick = {
-                clipboardManager.setPrimaryClip(ClipData.newPlainText("标题", outTitle))
+                clipboardManager.setPrimaryClip(ClipData.newPlainText("标题", viewModel.outTitle))
             }) {
                 Text(text = "复制")
             }
 
             OutlinedTextField(
-                value = outputUrl,
+                value = viewModel.outUrl,
                 onValueChange = {
-                    outputUrl = it
+                    viewModel.outUrl = it
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -192,7 +187,7 @@ fun MainPage(
                 }
             )
             Button(onClick = {
-                clipboardManager.setPrimaryClip(ClipData.newPlainText("真实链接", outputUrl))
+                clipboardManager.setPrimaryClip(ClipData.newPlainText("真实链接", viewModel.outUrl))
             }) {
                 Text(text = "复制")
             }
