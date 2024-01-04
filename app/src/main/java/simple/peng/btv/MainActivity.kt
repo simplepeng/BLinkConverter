@@ -1,6 +1,7 @@
 package simple.peng.btv
 
 import android.content.ClipData
+import android.content.res.Resources.Theme
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,11 +17,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -72,9 +75,15 @@ fun MainPage(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TopAppBar(title = {
-                Text(text = "不要B链")
-            })
+            TopAppBar(
+                title = {
+                    Text(text = "不要B链")
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
 
             OutlinedTextField(
                 value = viewModel.btvUrl,
