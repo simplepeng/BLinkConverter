@@ -73,7 +73,7 @@ fun MainPage(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TopAppBar(title = {
-                Text(text = "不要短链")
+                Text(text = "不要B链")
             })
 
             OutlinedTextField(
@@ -91,10 +91,10 @@ fun MainPage(
 
             Row {
                 Button(
+                    modifier = Modifier.padding(horizontal = 5.dp),
                     onClick = {
                         viewModel.fillInputUrl()
                     },
-                    modifier = Modifier.padding(end = 10.dp)
                 ) {
                     Text(text = "粘贴")
                 }
@@ -106,10 +106,20 @@ fun MainPage(
                     viewModel.canDecode = false
                 }
 
-                Button(onClick = {
-                    viewModel.canDecode = true
-                }) {
+                Button(
+                    modifier = Modifier.padding(horizontal = 5.dp),
+                    onClick = {
+                        viewModel.canDecode = true
+                    }) {
                     Text(text = "转换")
+                }
+
+                Button(
+                    modifier = Modifier.padding(horizontal = 5.dp),
+                    onClick = {
+                        viewModel.clearAll()
+                    }) {
+                    Text(text = "清空")
                 }
             }
 

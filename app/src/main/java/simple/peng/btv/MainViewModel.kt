@@ -84,4 +84,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+    fun clearAll(){
+        btvUrl = ""
+        outTitle = ""
+        outUrl = ""
+        canDecode = false
+    }
 }
