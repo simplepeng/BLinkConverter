@@ -1,7 +1,6 @@
 package simple.peng.btv
 
-import android.content.ClipData
-import android.content.res.Resources.Theme
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -52,6 +50,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        mainViewModel.parseIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        mainViewModel.parseIntent(intent)
     }
 
     override fun onResume() {

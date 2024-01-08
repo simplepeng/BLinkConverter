@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,15 +56,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             if (text.isNullOrEmpty()) return
 
             //用正则把mainViewModel.btvUrl里面的url取出来
-            val pattern = "https://\\S+".toRegex()
-            val matches = pattern.findAll(text)
-            val url = matches.toList().firstOrNull()?.value.orEmpty()
-            btvUrl = url
-            Log.d("MainActivity", "btvUrl -- $url")
+            parseUrlByRegex(text.toString())
+        }
+    }
 
-            if (btvUrl.isNotEmpty()) {
-                canDecode = true
-            }
+    private fun parseUrlByRegex(text: String) {
+        val pattern = "https://\\S+".toRegex()
+        val matches = pattern.findAll(text)
+        val url = matches.toList().firstOrNull()?.value.orEmpty()
+        btvUrl = url
+        Log.d("MainActivity", "btvUrl -- $url")
+
+        if (btvUrl.isNotEmpty()) {
+            canDecode = true
         }
     }
 
@@ -75,7 +80,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         clipboardManager.setPrimaryClip(ClipData.newPlainText("链接", outUrl))
     }
 
-    fun fillInputUrl(){
+    fun fillInputUrl() {
         if (clipboardManager.hasPrimaryClip()) {
             val clipData = clipboardManager.primaryClip
             val item = clipData?.getItemAt(0)
@@ -85,10 +90,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun clearAll(){
+    fun clearAll() {
         btvUrl = ""
         outTitle = ""
         outUrl = ""
         canDecode = false
+    }
+
+    fun parseIntent(intent: Intent?) {
+        val text = intent?.getStringExtra(Intent.EXTRA_TEXT).orEmpty()
+        if (text.isEmpty()) return
+
+        parseUrlByRegex(text)
     }
 }
